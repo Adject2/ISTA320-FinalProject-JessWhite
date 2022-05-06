@@ -2,7 +2,7 @@
 My final project for ISTA320, based on data collected from PlateRunner, a car spotting game (which I made) that uses NHTSA vehicle data to log vehicles that you see.
 
 # The Purpose
-This project will create 3 visualizations of data collected on local cars, based on the following set of questions.
+This project will create several visualizations of data collected on local cars, based on the following set of questions.
 
 **Line plot**: 
 What is the average age of the cars that are on the road today? What are the newest and oldest cars still driving?
