@@ -4,13 +4,13 @@ My final project for ISTA320, based on data collected from PlateRunner, a car sp
 # The Purpose
 This project will create 3 visualizations of data collected on local cars, based on the following set of questions.
 
-**Line plot: **
+**Line plot**: 
 What is the average age of the cars that are on the road today? What are the newest and oldest cars still driving?
 
-**Bar graph: **
+**Bar graph**: 
 Which car manufacturer is the most popular here in Tucson? From that manufacturer, which model is the most popular?
 
-**World map: **
+**World map**: 
 Where do these cars originate from? What is the most popular country of origin? In general, where are the local cars coming from and in what distribution?
 
 # The Data
