@@ -50,22 +50,37 @@ Build a line plot to answer question #1.
 # Remove NA years
 year_corrected_data <- crude_cars_data[!(is.na(crude_cars_data$Year)),]
 
-year_corrected_data %>%
-  ggplot(aes(x = Year)) +
-  stat_count(geom='point')
+year_counts <- data.frame(table(year_corrected_data$Year))
+
+# Rename the variables
+year_counts = rename(year_counts, Year = Var1, count = Freq)
+
+# Turn the fct into a dbl so we can scale the graph
+year_counts$Year <- as.numeric(as.character(year_counts$Year))
+
+glimpse(year_counts)
+
+year_counts %>%
+  ggplot(aes(x = Year,
+             y = count)) +
+  geom_point() +
+  geom_label(data = filter(year_counts, count == max(count)), aes(label = count)) +
+  scale_x_continuous()
 ```
+
+As we can see in this scatter plot, the average age of cars is around 5 years old. In our dataset,
+118 cars have been spotted that were made in 2017, and the years around it are also in the hundreds.
+
+The newest cars are from 2022, and they're somewhat uncommon as there have been about 40 spotted.
+
+The oldest car seen on the road is from 1940: an 82 year old car! This particular car is a 1940 Ford Coupe.
 
 # Bar Plot
 
-Build a scatter plot to answer question #2. Map `chol` to `x`, `thalach` to `y`, and `exang` to `color`.
+Build a bar plot to answer question #2.
 
 ```{r}
-# start with data and then
-# map aesthetics with ggplot and add
-# point geometrics
-heart_disease_data %>%
-  ggplot(aes(x = chol, y = exang, color = exang)) +
-  geom_point()
+
 ```
 
 # World Map
