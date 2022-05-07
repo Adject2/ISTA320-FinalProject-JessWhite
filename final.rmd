@@ -1,0 +1,119 @@
+---
+title: "ISTA 320 Final Project"
+author: "A. Jess White"
+date: "5/6, Spring 2022"
+output: html_document
+---
+
+# Reading in the data
+
+```{r setup, include=FALSE}
+# Load libraries
+library(ggplot2)
+library(dplyr)
+library(maps)
+
+# Read in raw data
+raw_cars_data <- read.csv("data/cars.csv")
+
+# Slight bit of cleanup: This ID is associated with the reward pool, which are cars we have not seen and must get rid of.
+clean_cars_data <- raw_cars_data[!(raw_cars_data$ID == 942407134514135050),]
+
+# Some cars are marked as unknown year or as a range, like "197x".
+# Let's turn these into NAs
+clean_cars_data$Year <- as.numeric(crude_cars_data$Year)
+
+```
+
+# Data Set Description
+
+This is in the README.md!
+
+# Data Questions
+
+Timeseries Scatter Plot
+1. What is the average age of the cars that are on the road today? What are the newest and oldest cars still driving?
+
+Bar graph
+2. Which car manufacturer is the most popular here in Tucson? From that manufacturer, which model is the most popular?
+
+World map
+3. Where do these cars originate from? What is the most popular country of origin? In general, where are the local cars coming from and in what distribution?
+
+
+# Timeseries Scatter Plot
+
+Build a line plot to answer question #1.
+
+```{r}
+
+# Remove NA years
+year_corrected_data <- crude_cars_data[!(is.na(crude_cars_data$Year)),]
+
+year_corrected_data %>%
+  ggplot(aes(x = Year)) +
+  stat_count(geom='point')
+```
+
+# Bar Plot
+
+Build a scatter plot to answer question #2. Map `chol` to `x`, `thalach` to `y`, and `exang` to `color`.
+
+```{r}
+# start with data and then
+# map aesthetics with ggplot and add
+# point geometrics
+heart_disease_data %>%
+  ggplot(aes(x = chol, y = exang, color = exang)) +
+  geom_point()
+```
+
+# World Map
+
+Build a world map to answer question #3.
+
+```{r}
+# Build map template
+world <- map_data("world")
+
+# View which entries do not match
+clean_cars_data %>%
+  filter(!(Birthplace %in% unique(world$region))) %>%
+  pull(Birthplace)
+
+# Manually correct some countries
+clean_cars_data <- clean_cars_data %>%
+  mutate(Birthplace = case_when(Birthplace == "United States" ~ "USA",
+                                Birthplace == "UNITED STATES" ~ "USA",
+                                Birthplace == "United Kingdom" ~ "UK",
+                                Birthplace == "MEXICO" ~ "Mexico",
+                                Birthplace == "JAPAN" ~ "Japan",
+                                TRUE ~ Birthplace))
+
+# Record counts to be displayed on the map
+country_counts <- data.frame(table(clean_cars_data$Birthplace))
+# Remove invalid values
+country_counts <- country_counts[!(country_counts$Var1 == "" | country_counts$Var1 == "N/A"),]
+# Combine datasets
+country_counts_world <- world %>%
+  left_join(country_counts,
+            by = c("region" = "Var1"))
+
+
+country_counts_world %>%
+  ggplot(aes(x = long,
+             y = lat,
+             fill = Freq,
+             map_id = region)) +
+  geom_map(map = world) +
+  theme_linedraw() +
+  theme(legend.position = "bottom") +
+  ggtitle("Number of local cars manufactured by country") +
+  scale_fill_continuous(name = "Cars manufactured",
+                        low = "cornsilk",
+                        high = "salmon4")
+```
+
+As you can see by this graph, there isn't much variety when it comes to car manufacturers. There isn't much competition either, as the United States manufactures the most local cars by a landslide. Canada, Japan, Mexico, and South Korea all produce a sizable portion of the local cars, but not enough to compete with the USA. The remaining countries, like Australia, Sweden, the UK, and Turkey all have only a handful of cars exported to Tucson.
+
+Overall, we can see that the domestic makes (e.g. Ford, Chevrolet, Dodge) and foreign makes that have factories in the USA (e.g. Toyota) dominate the car market here in Tucson.
