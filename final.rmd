@@ -9,6 +9,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 # Load libraries
+library(sf)
 library(ggplot2)
 library(dplyr)
 library(maps)
@@ -21,7 +22,7 @@ clean_cars_data <- raw_cars_data[!(raw_cars_data$ID == 942407134514135050),]
 
 # Some cars are marked as unknown year or as a range, like "197x".
 # Let's turn these into NAs
-clean_cars_data$Year <- as.numeric(crude_cars_data$Year)
+clean_cars_data$Year <- as.numeric(clean_cars_data$Year)
 
 # We want to analyze only daily driving vehicles. Let's filter out some odd brands
 # We don't want buses, semitrucks, or work vehicles.
@@ -155,8 +156,10 @@ clean_cars_data <- clean_cars_data %>%
 
 # Record counts to be displayed on the map
 country_counts <- data.frame(table(clean_cars_data$Birthplace))
+
 # Remove invalid values
 country_counts <- country_counts[!(country_counts$Var1 == "" | country_counts$Var1 == "N/A"),]
+
 # Combine datasets
 country_counts_world <- world %>%
   left_join(country_counts,
@@ -174,9 +177,11 @@ country_counts_world %>%
   ggtitle("Number of cars in Tucson manufactured by country") +
   scale_fill_continuous(name = "Cars manufactured",
                         low = "cornsilk",
-                        high = "salmon4")
+                        high = "salmon4") +
+  coord_sf(xlim = c(-170, 175),
+           ylim = c(-60, 82)) # To zoom in a little
 ```
 
-As you can see by this graph, there isn't much variety when it comes to car manufacturers. There isn't much competition either, as the United States manufactures the most local cars by a landslide. Canada, Japan, Mexico, and South Korea all produce a sizable portion of the local cars, but not enough to compete with the USA. The remaining countries, like Australia, Sweden, the UK, and Turkey all have only a handful of cars exported to Tucson.
+As you can see by this map, there isn't much variety when it comes to car manufacturers. There isn't much competition either, as the United States manufactures the most local cars by a landslide. Canada, Japan, Mexico, and South Korea all produce a sizable portion of the local cars, but not enough to compete with the USA. The remaining countries, like Australia, Sweden, the UK, and Turkey all have only a handful of cars exported to Tucson.
 
 Overall, we can see that the domestic makes (e.g. Ford, Chevrolet, Dodge) and foreign makes that have factories in the USA (e.g. Toyota) dominate the car market here in Tucson.
