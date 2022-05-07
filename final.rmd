@@ -5,7 +5,7 @@ date: "5/6, Spring 2022"
 output: html_document
 ---
 
-# Reading in the data
+# Data Reading and Wrangling
 
 ```{r setup, include=FALSE}
 # Load libraries
@@ -23,6 +23,24 @@ clean_cars_data <- raw_cars_data[!(raw_cars_data$ID == 942407134514135050),]
 # Let's turn these into NAs
 clean_cars_data$Year <- as.numeric(crude_cars_data$Year)
 
+# We want to analyze only daily driving vehicles. Let's filter out some odd brands
+# We don't want buses, semitrucks, or work vehicles.
+clean_cars_data <- clean_cars_data[!(clean_cars_data$Make == "Blue Bird" |
+                                     clean_cars_data$Make == "Freightliner" |
+                                     clean_cars_data$Make == "Gillig" |
+                                     clean_cars_data$Make == "International" |
+                                     clean_cars_data$Make == "Kenworth" |
+                                     clean_cars_data$Make == "Mitsubishi Fuso" |
+                                     clean_cars_data$Make == "Motor Coach Industries" |
+                                     clean_cars_data$Make == "Peterbilt" |
+                                     clean_cars_data$Make == "Workhorse Custom Chassis"),]
+
+# Finally, we want to make sure brand names are standardized.
+clean_cars_data <- clean_cars_data %>%
+  mutate(Make = case_when(Make == "KIA" ~ "Kia",
+                          Make == "RAM" ~ "Ram",
+                          TRUE ~ Make))
+
 ```
 
 # Data Set Description
@@ -35,7 +53,7 @@ Timeseries Scatter Plot
 1. What is the average age of the cars that are on the road today? What are the newest and oldest cars still driving?
 
 Bar graph
-2. Which car manufacturer is the most popular here in Tucson? From that manufacturer, which model is the most popular?
+2. Which car manufacturer is the most popular here in Tucson? Which manufacturer is the least popular?
 
 World map
 3. Where do these cars originate from? What is the most popular country of origin? In general, where are the local cars coming from and in what distribution?
@@ -48,8 +66,9 @@ Build a line plot to answer question #1.
 ```{r}
 
 # Remove NA years
-year_corrected_data <- crude_cars_data[!(is.na(crude_cars_data$Year)),]
+year_corrected_data <- clean_cars_data[!(is.na(clean_cars_data$Year)),]
 
+# Make a table with years and their counts
 year_counts <- data.frame(table(year_corrected_data$Year))
 
 # Rename the variables
@@ -58,8 +77,10 @@ year_counts = rename(year_counts, Year = Var1, count = Freq)
 # Turn the fct into a dbl so we can scale the graph
 year_counts$Year <- as.numeric(as.character(year_counts$Year))
 
+# Check to see that it worked
 glimpse(year_counts)
 
+# Create a timeseries scatter plor
 year_counts %>%
   ggplot(aes(x = Year,
              y = count)) +
@@ -81,7 +102,33 @@ Build a bar plot to answer question #2.
 
 ```{r}
 
+# Make a dataframe with the car makes and their counts
+make_counts <- data.frame(table(clean_cars_data$Make))
+
+# Rename the auto-assigned variables
+make_counts <- rename(make_counts, Make = Var1, Count = Freq)
+
+# Make a plot that makes manufacturers easier to find
+make_counts %>%
+  ggplot(aes(x = Make,
+             y = Count)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  ggtitle("Number of cars by manufacturer: Alphabetical order")
+
+# Make another plot, but with clearer comparisons between counts
+make_counts %>%
+  ggplot(aes(x = reorder(Make, Count),
+             y = Count)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  ggtitle("Number of cars by manufacturer: Ordered by count")
+
 ```
+
+It is clear by both of these charts that the most popular brand is Chevrolet. It is close though, with Ford and Toyota competing at the same level. The remaining brands quickly drop in popularity.
+
+The least popular brands are Alfa Romeo, Bentley, Datsun, and Plymouth, at least out of the ones we were able to find. There are car manufacturers that we have yet to see, but these are the least popular of the ones we have found. This makes sense too: Alfa Romeos are foreign and expensive cars, Bentleys are incredibly expensive and luxurious, and Plymouth and Datsun have both been out of business for a very long time.
 
 # World Map
 
