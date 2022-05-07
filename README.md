@@ -4,7 +4,7 @@ My final project for ISTA320, based on data collected from PlateRunner, a car sp
 # The Purpose
 This project will create several visualizations of data collected on local cars, based on the following set of questions.
 
-**Line plot**: 
+**Timeseries scatter plot**: 
 What is the average age of the cars that are on the road today? What are the newest and oldest cars still driving?
 
 **Bar graph**: 
