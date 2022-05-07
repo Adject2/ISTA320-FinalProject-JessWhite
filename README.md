@@ -8,7 +8,7 @@ This project will create several visualizations of data collected on local cars,
 What is the average age of the cars that are on the road today? What are the newest and oldest cars still driving?
 
 **Bar graph**: 
-Which car manufacturer is the most popular here in Tucson? From that manufacturer, which model is the most popular?
+Which car manufacturer(s) are the most popular here in Tucson? Which manufacturer(s) are the least popular (of the ones spotted)?
 
 **World map**: 
 Where do these cars originate from? What is the most popular country of origin? In general, where are the local cars coming from and in what distribution?
