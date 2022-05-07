@@ -72,7 +72,7 @@ year_corrected_data <- clean_cars_data[!(is.na(clean_cars_data$Year)),]
 year_counts <- data.frame(table(year_corrected_data$Year))
 
 # Rename the variables
-year_counts = rename(year_counts, Year = Var1, count = Freq)
+year_counts <- rename(year_counts, Year = Var1, Count = Freq)
 
 # Turn the fct into a dbl so we can scale the graph
 year_counts$Year <- as.numeric(as.character(year_counts$Year))
@@ -83,10 +83,11 @@ glimpse(year_counts)
 # Create a timeseries scatter plor
 year_counts %>%
   ggplot(aes(x = Year,
-             y = count)) +
+             y = Count)) +
   geom_point() +
-  geom_label(data = filter(year_counts, count == max(count)), aes(label = count)) +
-  scale_x_continuous()
+  geom_label(data = filter(year_counts, Count == max(Count)), aes(label = Count)) +
+  scale_x_continuous() +
+  ggtitle("Number of cars per manufacturing year")
 ```
 
 As we can see in this scatter plot, the average age of cars is around 5 years old. In our dataset,
@@ -118,7 +119,7 @@ make_counts %>%
 
 # Make another plot, but with clearer comparisons between counts
 make_counts %>%
-  ggplot(aes(x = reorder(Make, Count),
+  ggplot(aes(x = reorder(Make, -Count),
              y = Count)) +
   geom_col() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
@@ -161,7 +162,7 @@ country_counts_world <- world %>%
   left_join(country_counts,
             by = c("region" = "Var1"))
 
-
+# Plot the counts on each country
 country_counts_world %>%
   ggplot(aes(x = long,
              y = lat,
@@ -170,7 +171,7 @@ country_counts_world %>%
   geom_map(map = world) +
   theme_linedraw() +
   theme(legend.position = "bottom") +
-  ggtitle("Number of local cars manufactured by country") +
+  ggtitle("Number of cars in Tucson manufactured by country") +
   scale_fill_continuous(name = "Cars manufactured",
                         low = "cornsilk",
                         high = "salmon4")
